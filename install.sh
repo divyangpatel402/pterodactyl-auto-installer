@@ -46,74 +46,27 @@ set LNAME [lindex $argv 3]
 
 spawn bash -c "bash <(curl -s https://pterodactyl-installer.se)"
 
-expect "Input 0-6:"
-send "0\r"
-
 expect {
-    "Are you sure you want to proceed?" {
-        send "y\r"
-        expect "Database name"
-        send "\r"
-    }
-    "Database name" {
-        send "\r"
-    }
+    "Input 0-6:" { send "0\r"; exp_continue }
+    "Are you sure you want to proceed?" { send "y\r"; exp_continue }
+    "Database name" { send "\r"; exp_continue }
+    "Database username" { send "\r"; exp_continue }
+    "randomly generated password" { send "\r"; exp_continue }
+    "Select timezone" { send "UTC\r"; exp_continue }
+    "configure Let's Encrypt and Pterodactyl:" { send "$EMAIL\r"; exp_continue }
+    "Email address for the initial admin account:" { send "$EMAIL\r"; exp_continue }
+    "Username for the initial admin account:" { send "admin\r"; exp_continue }
+    "First name for the initial admin account:" { send "$FNAME\r"; exp_continue }
+    "Last name for the initial admin account:" { send "$LNAME\r"; exp_continue }
+    "Password for the initial admin account:" { send "AdminPass123!\r"; exp_continue }
+    "FQDN of this panel" { send "$FQDN\r"; exp_continue }
+    "configure UFW" { send "y\r"; exp_continue }
+    "configure HTTPS using Let's Encrypt" { send "y\r"; exp_continue }
+    "I agree that this HTTPS request is performed" { send "y\r"; exp_continue }
+    "Proceed with installation" { send "y\r"; exp_continue }
+    "Enable sending anonymous telemetry data?" { send "no\r"; exp_continue }
+    eof
 }
-
-expect "Database username"
-send "\r"
-
-expect "randomly generated password"
-send "\r"
-
-expect "Select timezone"
-send "UTC\r"
-
-expect "configure Let's Encrypt and Pterodactyl:"
-send "$EMAIL\r"
-
-expect "Email address for the initial admin account:"
-send "$EMAIL\r"
-
-expect "Username for the initial admin account:"
-send "admin\r"
-
-expect "First name for the initial admin account:"
-send "$FNAME\r"
-
-expect "Last name for the initial admin account:"
-send "$LNAME\r"
-
-expect "Password for the initial admin account:"
-send "AdminPass123!\r"
-
-expect "FQDN of this panel"
-send "$FQDN\r"
-
-expect "configure UFW"
-send "y\r"
-
-expect "configure HTTPS using Let's Encrypt"
-send "y\r"
-
-expect {
-    "I agree that this HTTPS request is performed" {
-        send "y\r"
-        expect "Proceed with installation"
-        send "y\r"
-    }
-    "Proceed with installation" {
-        send "y\r"
-    }
-}
-
-expect {
-    "(yes/no)" {
-        send "no\r"
-    }
-}
-
-expect eof
 EOF
     chmod +x /tmp/ptero_panel.exp
     /tmp/ptero_panel.exp "$PANEL_FQDN" "$EMAIL" "$FIRST_NAME" "$LAST_NAME"
@@ -136,63 +89,19 @@ set EMAIL [lindex $argv 1]
 
 spawn bash -c "bash <(curl -s https://pterodactyl-installer.se)"
 
-expect "Input 0-6:"
-send "1\r"
-
 expect {
-    "Are you sure you want to proceed?" {
-        send "y\r"
-        expect "configure UFW"
-        send "y\r"
-    }
-    "configure UFW" {
-        send "y\r"
-    }
+    "Input 0-6:" { send "1\r"; exp_continue }
+    "Are you sure you want to proceed?" { send "y\r"; exp_continue }
+    "configure UFW" { send "y\r"; exp_continue }
+    "configure a user for database hosts" { send "y\r"; exp_continue }
+    "Enter the panel address" { send "\r"; exp_continue }
+    "configure HTTPS using Let's Encrypt" { send "y\r"; exp_continue }
+    "FQDN of this node" { send "$NODE_FQDN\r"; exp_continue }
+    "email address for Let's Encrypt:" { send "$EMAIL\r"; exp_continue }
+    "I agree that this HTTPS request is performed" { send "y\r"; exp_continue }
+    "Proceed with installation" { send "y\r"; exp_continue }
+    eof
 }
-
-expect "configure a user for database hosts"
-send "y\r"
-
-expect "Enter the panel address"
-send "\r"
-
-expect {
-    "configure HTTPS using Let's Encrypt" {
-        send "y\r"
-        expect "FQDN of this node"
-        send "$NODE_FQDN\r"
-        expect "email address for Let's Encrypt:"
-        send "$EMAIL\r"
-        expect {
-            "I agree that this HTTPS request is performed" {
-                send "y\r"
-                expect "Proceed with installation"
-                send "y\r"
-            }
-            "Proceed with installation" {
-                send "y\r"
-            }
-        }
-    }
-    "email address for Let's Encrypt:" {
-        send "$EMAIL\r"
-        expect {
-            "I agree that this HTTPS request is performed" {
-                send "y\r"
-                expect "Proceed with installation"
-                send "y\r"
-            }
-            "Proceed with installation" {
-                send "y\r"
-            }
-        }
-    }
-    "Proceed with installation" {
-        send "y\r"
-    }
-}
-
-expect eof
 EOF
     chmod +x /tmp/ptero_wings.exp
     /tmp/ptero_wings.exp "$NODE_FQDN" "$EMAIL"
