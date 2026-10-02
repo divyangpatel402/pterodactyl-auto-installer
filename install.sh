@@ -28,6 +28,7 @@ if [ "$choice" == "1" ]; then
     read -p "Enter Email: " EMAIL
     read -p "Enter First Name: " FIRST_NAME
     read -p "Enter Last Name: " LAST_NAME
+    read -p "Enter Admin Password: " ADMIN_PASSWORD
 
     echo "Installing Dependencies and Docker..."
     apt update -y && apt upgrade -y
@@ -43,6 +44,7 @@ set FQDN [lindex $argv 0]
 set EMAIL [lindex $argv 1]
 set FNAME [lindex $argv 2]
 set LNAME [lindex $argv 3]
+set PASS [lindex $argv 4]
 
 spawn bash -c "bash <(curl -s https://pterodactyl-installer.se)"
 
@@ -58,20 +60,22 @@ expect {
     "Username for the initial admin account:" { send "admin\r"; exp_continue }
     "First name for the initial admin account:" { send "$FNAME\r"; exp_continue }
     "Last name for the initial admin account:" { send "$LNAME\r"; exp_continue }
-    "Password for the initial admin account:" { send "AdminPass123!\r"; exp_continue }
+    "Password for the initial admin account:" { send "$PASS\r"; exp_continue }
     "FQDN of this panel" { send "$FQDN\r"; exp_continue }
     "configure UFW" { send "y\r"; exp_continue }
     "configure HTTPS using Let's Encrypt" { send "y\r"; exp_continue }
     "I agree that this HTTPS request is performed" { send "y\r"; exp_continue }
     "Proceed with installation" { send "y\r"; exp_continue }
     "Enable sending anonymous telemetry data?" { send "no\r"; exp_continue }
+    "(Y)es/(N)o:" { send "y\r"; exp_continue }
+    "share your email address" { send "n\r"; exp_continue }
     "(y/N):" { send "y\r"; exp_continue }
     "(Y/n):" { send "y\r"; exp_continue }
     eof
 }
 EOF
     chmod +x /tmp/ptero_panel.exp
-    /tmp/ptero_panel.exp "$PANEL_FQDN" "$EMAIL" "$FIRST_NAME" "$LAST_NAME"
+    /tmp/ptero_panel.exp "$PANEL_FQDN" "$EMAIL" "$FIRST_NAME" "$LAST_NAME" "$ADMIN_PASSWORD"
 
     echo ""
     echo "what is your Node fqdn like ex same add New Subdomin DNS only on your Cloudfalre.com Ex node.yourdomin.site"
@@ -103,6 +107,8 @@ expect {
     "email address for Let's Encrypt:" { send "$EMAIL\r"; exp_continue }
     "I agree that this HTTPS request is performed" { send "y\r"; exp_continue }
     "Proceed with installation" { send "y\r"; exp_continue }
+    "(Y)es/(N)o:" { send "y\r"; exp_continue }
+    "share your email address" { send "n\r"; exp_continue }
     "(y/N):" { send "y\r"; exp_continue }
     "(Y/n):" { send "y\r"; exp_continue }
     eof
