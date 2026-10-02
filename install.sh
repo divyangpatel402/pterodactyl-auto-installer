@@ -65,6 +65,8 @@ expect {
     "I agree that this HTTPS request is performed" { send "y\r"; exp_continue }
     "Proceed with installation" { send "y\r"; exp_continue }
     "Enable sending anonymous telemetry data?" { send "no\r"; exp_continue }
+    "(y/N):" { send "y\r"; exp_continue }
+    "(Y/n):" { send "y\r"; exp_continue }
     eof
 }
 EOF
@@ -94,12 +96,15 @@ expect {
     "Are you sure you want to proceed?" { send "y\r"; exp_continue }
     "configure UFW" { send "y\r"; exp_continue }
     "configure a user for database hosts" { send "y\r"; exp_continue }
+    "configure MySQL to be accessed externally" { send "y\r"; exp_continue }
     "Enter the panel address" { send "\r"; exp_continue }
     "configure HTTPS using Let's Encrypt" { send "y\r"; exp_continue }
     "FQDN of this node" { send "$NODE_FQDN\r"; exp_continue }
     "email address for Let's Encrypt:" { send "$EMAIL\r"; exp_continue }
     "I agree that this HTTPS request is performed" { send "y\r"; exp_continue }
     "Proceed with installation" { send "y\r"; exp_continue }
+    "(y/N):" { send "y\r"; exp_continue }
+    "(Y/n):" { send "y\r"; exp_continue }
     eof
 }
 EOF
