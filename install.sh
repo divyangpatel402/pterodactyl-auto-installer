@@ -31,25 +31,78 @@ if [ "$choice" == "1" ]; then
 
     echo "Installing Dependencies and Docker..."
     apt update -y && apt upgrade -y
-    apt install -y curl wget tar unzip git jq software-properties-common apt-transport-https ca-certificates gnupg
+    apt install -y curl wget tar unzip git jq software-properties-common apt-transport-https ca-certificates gnupg expect
     curl -fsSL https://get.docker.com | sh
     systemctl enable --now docker
 
     echo "Installing Pterodactyl Panel (Using Community Installer)..."
-    bash <(curl -s https://pterodactyl-installer.se) <<EOF
-0
-$PANEL_FQDN
-$PANEL_FQDN
-$EMAIL
-$EMAIL
-$FIRST_NAME
-$LAST_NAME
-password
-password
-$PANEL_FQDN
-y
-y
+    cat << 'EOF' > /tmp/ptero_panel.exp
+#!/usr/bin/expect -f
+set timeout -1
+set FQDN [lindex $argv 0]
+set EMAIL [lindex $argv 1]
+set FNAME [lindex $argv 2]
+set LNAME [lindex $argv 3]
+
+spawn bash -c "bash <(curl -s https://pterodactyl-installer.se)"
+
+expect "Input 0-6:"
+send "0\r"
+
+expect {
+    "Are you sure you want to proceed? (y/N):" {
+        send "y\r"
+        expect "Database name (panel):"
+        send "\r"
+    }
+    "Database name (panel):" {
+        send "\r"
+    }
+}
+
+expect "Database username (pterodactyl):"
+send "\r"
+
+expect "Password (press enter to use randomly generated password):"
+send "\r"
+
+expect "Select timezone"
+send "UTC\r"
+
+expect "Provide the email address that will be used to configure Let's Encrypt and Pterodactyl:"
+send "$EMAIL\r"
+
+expect "Email address for the initial admin account:"
+send "$EMAIL\r"
+
+expect "Username for the initial admin account:"
+send "admin\r"
+
+expect "First name for the initial admin account:"
+send "$FNAME\r"
+
+expect "Last name for the initial admin account:"
+send "$LNAME\r"
+
+expect "Password for the initial admin account:"
+send "AdminPass123!\r"
+
+expect "FQDN of this panel"
+send "$FQDN\r"
+
+expect "Do you want to automatically configure UFW (firewall)? (y/N):"
+send "y\r"
+
+expect "Do you want to setup Let's Encrypt HTTPS? (Y/n):"
+send "y\r"
+
+expect "Proceed with installation? (y/N):"
+send "y\r"
+
+expect eof
 EOF
+    chmod +x /tmp/ptero_panel.exp
+    /tmp/ptero_panel.exp "$PANEL_FQDN" "$EMAIL" "$FIRST_NAME" "$LAST_NAME"
 
     echo ""
     echo "what is your Node fqdn like ex same add New Subdomin DNS only on your Cloudfalre.com Ex node.yourdomin.site"
@@ -61,15 +114,58 @@ EOF
     chmod u+x /usr/local/bin/wings
 
     echo "Setting up Wings auto-configuration..."
-    # Note: To fully automate Node addition on Pterodactyl, an API key is required.
-    # The community installer sets up the panel. For the node, we can run the wings installer.
-    bash <(curl -s https://pterodactyl-installer.se) <<EOF
-1
-y
-$NODE_FQDN
-y
-y
+    cat << 'EOF' > /tmp/ptero_wings.exp
+#!/usr/bin/expect -f
+set timeout -1
+set NODE_FQDN [lindex $argv 0]
+set EMAIL [lindex $argv 1]
+
+spawn bash -c "bash <(curl -s https://pterodactyl-installer.se)"
+
+expect "Input 0-6:"
+send "1\r"
+
+expect {
+    "Are you sure you want to proceed? (y/N):" {
+        send "y\r"
+        expect "Do you want to automatically configure UFW (firewall)? (y/N):"
+        send "y\r"
+    }
+    "Do you want to automatically configure UFW (firewall)? (y/N):" {
+        send "y\r"
+    }
+}
+
+expect "Do you want to automatically configure a user for database hosts? (y/N):"
+send "y\r"
+
+expect "Enter the panel address (blank for any address):"
+send "\r"
+
+expect {
+    "Do you want to automatically configure HTTPS using Let's Encrypt? (y/N):" {
+        send "y\r"
+        expect "Enter the FQDN of this node"
+        send "$NODE_FQDN\r"
+        expect "Enter the email address for Let's Encrypt:"
+        send "$EMAIL\r"
+        expect "Proceed with installation? (y/N):"
+        send "y\r"
+    }
+    "Enter the email address for Let's Encrypt:" {
+        send "$EMAIL\r"
+        expect "Proceed with installation? (y/N):"
+        send "y\r"
+    }
+    "Proceed with installation? (y/N):" {
+        send "y\r"
+    }
+}
+
+expect eof
 EOF
+    chmod +x /tmp/ptero_wings.exp
+    /tmp/ptero_wings.exp "$NODE_FQDN" "$EMAIL"
 
     echo "Installation Complete!"
 
