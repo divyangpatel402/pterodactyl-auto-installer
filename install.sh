@@ -108,12 +108,12 @@ expect {
 }
 
 expect {
-    "telemetry data" {
+    "(yes/no)" {
         send "no\r"
-        exp_continue
     }
-    eof
 }
+
+expect eof
 EOF
     chmod +x /tmp/ptero_panel.exp
     /tmp/ptero_panel.exp "$PANEL_FQDN" "$EMAIL" "$FIRST_NAME" "$LAST_NAME"
