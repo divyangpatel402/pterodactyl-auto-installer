@@ -108,7 +108,7 @@ expect {
 }
 
 expect {
-    "Enable sending anonymous telemetry data?" {
+    "telemetry data" {
         send "no\r"
         exp_continue
     }
