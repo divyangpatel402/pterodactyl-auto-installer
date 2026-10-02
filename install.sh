@@ -96,8 +96,16 @@ send "y\r"
 expect "configure HTTPS using Let's Encrypt"
 send "y\r"
 
-expect "Proceed with installation"
-send "y\r"
+expect {
+    "I agree that this HTTPS request is performed" {
+        send "y\r"
+        expect "Proceed with installation"
+        send "y\r"
+    }
+    "Proceed with installation" {
+        send "y\r"
+    }
+}
 
 expect eof
 EOF
@@ -149,13 +157,29 @@ expect {
         send "$NODE_FQDN\r"
         expect "email address for Let's Encrypt:"
         send "$EMAIL\r"
-        expect "Proceed with installation"
-        send "y\r"
+        expect {
+            "I agree that this HTTPS request is performed" {
+                send "y\r"
+                expect "Proceed with installation"
+                send "y\r"
+            }
+            "Proceed with installation" {
+                send "y\r"
+            }
+        }
     }
     "email address for Let's Encrypt:" {
         send "$EMAIL\r"
-        expect "Proceed with installation"
-        send "y\r"
+        expect {
+            "I agree that this HTTPS request is performed" {
+                send "y\r"
+                expect "Proceed with installation"
+                send "y\r"
+            }
+            "Proceed with installation" {
+                send "y\r"
+            }
+        }
     }
     "Proceed with installation" {
         send "y\r"
