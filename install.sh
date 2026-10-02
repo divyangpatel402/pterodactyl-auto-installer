@@ -50,26 +50,26 @@ expect "Input 0-6:"
 send "0\r"
 
 expect {
-    "Are you sure you want to proceed? (y/N):" {
+    "Are you sure you want to proceed?" {
         send "y\r"
-        expect "Database name (panel):"
+        expect "Database name"
         send "\r"
     }
-    "Database name (panel):" {
+    "Database name" {
         send "\r"
     }
 }
 
-expect "Database username (pterodactyl):"
+expect "Database username"
 send "\r"
 
-expect "Password (press enter to use randomly generated password):"
+expect "randomly generated password"
 send "\r"
 
 expect "Select timezone"
 send "UTC\r"
 
-expect "Provide the email address that will be used to configure Let's Encrypt and Pterodactyl:"
+expect "configure Let's Encrypt and Pterodactyl:"
 send "$EMAIL\r"
 
 expect "Email address for the initial admin account:"
@@ -90,13 +90,13 @@ send "AdminPass123!\r"
 expect "FQDN of this panel"
 send "$FQDN\r"
 
-expect "Do you want to automatically configure UFW (firewall)? (y/N):"
+expect "configure UFW"
 send "y\r"
 
-expect "Do you want to setup Let's Encrypt HTTPS? (Y/n):"
+expect "configure HTTPS using Let's Encrypt"
 send "y\r"
 
-expect "Proceed with installation? (y/N):"
+expect "Proceed with installation"
 send "y\r"
 
 expect eof
@@ -126,38 +126,38 @@ expect "Input 0-6:"
 send "1\r"
 
 expect {
-    "Are you sure you want to proceed? (y/N):" {
+    "Are you sure you want to proceed?" {
         send "y\r"
-        expect "Do you want to automatically configure UFW (firewall)? (y/N):"
+        expect "configure UFW"
         send "y\r"
     }
-    "Do you want to automatically configure UFW (firewall)? (y/N):" {
+    "configure UFW" {
         send "y\r"
     }
 }
 
-expect "Do you want to automatically configure a user for database hosts? (y/N):"
+expect "configure a user for database hosts"
 send "y\r"
 
-expect "Enter the panel address (blank for any address):"
+expect "Enter the panel address"
 send "\r"
 
 expect {
-    "Do you want to automatically configure HTTPS using Let's Encrypt? (y/N):" {
+    "configure HTTPS using Let's Encrypt" {
         send "y\r"
-        expect "Enter the FQDN of this node"
+        expect "FQDN of this node"
         send "$NODE_FQDN\r"
-        expect "Enter the email address for Let's Encrypt:"
+        expect "email address for Let's Encrypt:"
         send "$EMAIL\r"
-        expect "Proceed with installation? (y/N):"
+        expect "Proceed with installation"
         send "y\r"
     }
-    "Enter the email address for Let's Encrypt:" {
+    "email address for Let's Encrypt:" {
         send "$EMAIL\r"
-        expect "Proceed with installation? (y/N):"
+        expect "Proceed with installation"
         send "y\r"
     }
-    "Proceed with installation? (y/N):" {
+    "Proceed with installation" {
         send "y\r"
     }
 }
